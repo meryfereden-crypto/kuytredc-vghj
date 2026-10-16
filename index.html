@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 English Grammar Comprehensive Assessment</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <header class="gradient-bg text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Grade 6 English Grammar Assessment</h1>
+                <p class="text-xs sm:text-sm text-indigo-100">Ministry of Education Curriculum • Units 1, 2 & 3</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div id="timer-display" class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 text-sm font-semibold flex items-center gap-2">
+                    <svg class="w-4 h-4 text-rose-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="time" style="color: #fca5a5;">150:00</span>
+                </div>
+                <button onclick="toggleTeacherDashboard()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition backdrop-blur-md border border-white/20">
+                    Teacher Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+        
+        <!-- SECTION 1: Student Identification Card -->
+        <section id="id-section" class="bg-white rounded-3xl card-shadow p-6 sm:p-10 border border-slate-100 transition-all duration-300">
+            <div class="max-w-xl mx-auto text-center">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-inner">📝</div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Student Registration</h2>
+                <p class="text-sm text-slate-500 mb-8">Please enter your full name and student ID number before beginning the comprehensive 100-item assessment.</p>
+                
+                <form id="registration-form" onsubmit="startQuiz(event)" class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                        <input type="text" id="student-name" required placeholder="e.g. Abebe Kebede" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50/50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Student ID Number</label>
+                        <input type="text" id="student-id" required placeholder="e.g. ST/2026/0123" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50/50">
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full gradient-bg hover:opacity-95 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-500/25 transition flex items-center justify-center gap-2">
+                            <span>Start Assessment</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Quiz Interface -->
+        <section id="quiz-section" class="hidden space-y-6">
+            <!-- Progress Bar and Meta -->
+            <div class="bg-white rounded-2xl p-4 card-shadow border border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="w-full sm:w-2/3">
+                    <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1">
+                        <span id="progress-text">Question 1 of 100</span>
+                        <span id="progress-percent">1%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="gradient-bg h-2.5 rounded-full transition-all duration-300 w-[1%]"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="speakCurrentQuestion()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 border border-indigo-100" title="Listen with British Woman Narrator">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 11.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                        <span>Narrate</span>
+                    </button>
+                    <span id="unit-badge" class="px-3 py-1 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">Unit 1</span>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-3xl card-shadow p-6 sm:p-10 border border-slate-100">
+                <div class="flex items-start justify-between gap-4 mb-6">
+                    <h3 id="question-title" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug"></h3>
+                    <span id="question-number-badge" class="flex-shrink-0 w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shadow-inner">1</span>
+                </div>
+
+                <!-- Options List -->
+                <div id="options-container" class="space-y-3 mb-8">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <!-- Instant Feedback Box (Hidden by default) -->
+                <div id="feedback-box" class="hidden rounded-2xl p-5 mb-8 border transition-all">
+                    <div class="flex items-start gap-3">
+                        <div id="feedback-icon" class="text-xl"></div>
+                        <div>
+                            <h4 id="feedback-heading" class="font-bold text-sm mb-1"></h4>
+                            <p id="feedback-text" class="text-xs sm:text-sm mb-3 leading-relaxed"></p>
+                            <div class="border-t pt-3 border-slate-200/60 mt-2">
+                                <p class="text-xs font-semibold text-slate-600 mb-1">🇪🇹 አማርኛ ማብራሪያ (Amharic Explanation):</p>
+                                <p id="feedback-amharic" class="text-xs sm:text-sm text-slate-700 italic leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-slate-100">
+                    <button onclick="prevQuestion()" id="prev-btn" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <span>Back</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-3">
+                        <button onclick="skipQuestion()" id="skip-btn" class="px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 font-medium text-sm transition">
+                            Skip
+                        </button>
+                        <button onclick="nextQuestion()" id="next-btn" class="gradient-bg hover:opacity-95 text-white font-medium text-sm px-6 py-2.5 rounded-xl shadow-md shadow-indigo-500/20 transition flex items-center gap-2">
+                            <span id="next-btn-text">Next</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Results Summary Dashboard -->
+        <section id="results-section" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl card-shadow p-8 sm:p-12 border border-slate-100 text-center max-w-2xl mx-auto">
+                <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">🏆</div>
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Assessment Completed!</h2>
+                <p class="text-slate-500 mb-8">Fantastic job completing the Grade 6 English Grammar Comprehensive Assessment.</p>
+
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200/60 mb-8 text-left space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Student Name:</span>
+                        <span id="res-name" class="font-semibold text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Student ID Number:</span>
+                        <span id="res-id" class="font-semibold text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between text-sm border-t pt-3">
+                        <span class="text-slate-500">Final Score:</span>
+                        <span id="res-score" class="font-bold text-indigo-600 text-lg">0 / 100</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Percentage:</span>
+                        <span id="res-percent" class="font-bold text-emerald-600 text-lg">0%</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <button onclick="sendScoreEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Send Score to Teacher (mesayferedegn2@gmail.com)</span>
+                    </button>
+                    <button onclick="restartQuiz()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3.5 px-6 rounded-xl transition">
+                        Retake Assessment
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Teacher Dashboard Modal -->
+        <div id="teacher-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl card-shadow max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-slate-900">Teacher Results Dashboard</h3>
+                    <button onclick="toggleTeacherDashboard()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">✕</button>
+                </div>
+                <p class="text-sm text-slate-500 mb-6">Review records of students who have completed the assessment on this device.</p>
+                
+                <div id="teacher-records-container" class="space-y-3 mb-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button onclick="clearRecords()" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-sm font-medium hover:bg-rose-100 transition">Clear Records</button>
+                    <button onclick="toggleTeacherDashboard()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-sm font-medium hover:bg-slate-900 transition">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/60 py-6 mt-12 text-center text-xs text-slate-400">
+        Grade 6 Comprehensive English Grammar Assessment • Ministry of Education Aligned • Interactive Web Portal
+    </footer>
+
+    <script>
+        // Full 100 Questions dataset with questions, options, correct answers, unit classifications, and bilingual explanations
+        const questionsData = [
+            // UNIT 1 (1-20)
+            { id: 1, unit: "Unit 1: Traditional Games", q: "Kebede ________ Gebet'a with his neighbors every weekend.", options: ["play", "plays", "is playing", "played"], correct: 1, 
+              exp: "Kebede is third-person singular (he), requiring '-s' on the base verb in Simple Present.",
+              amharic: "ከበደ (እሱ) ሦስተኛ ሰው ነጠላ ስለሆነ በሲምፕል ፕረዘንት ግስ ላይ '-s' ይጨመራል።" },
+            { id: 2, unit: "Unit 1: Traditional Games", q: "They ________ like to play traditional games when it is raining heavily outside.", options: ["does not", "aren't", "do not", "did not"], correct: 2, 
+              exp: "The subject 'They' takes 'do not' (don't) for simple present negative.",
+              amharic: "ርዕሰ ጉዳዩ 'They' (እነሱ) ሲሆን በሲምፕል ፕረዘንት አሉታዊ አረፍተ ነገር 'do not' ይጠቀማል።" },
+            { id: 3, unit: "Unit 1: Traditional Games", q: "________ Sherif live with his parents in the town?", options: ["Do", "Is", "Does", "Are"], correct: 2, 
+              exp: "Third-person singular 'Sherif' uses 'Does' for simple present yes/no questions.",
+              amharic: "ሦስተኛ ሰው ነጠላ የሆነው 'ሼሪፍ' በጥያቄ ጊዜ 'Does' ረዳት ግስ ይወስዳል።" },
+            { id: 4, unit: "Unit 1: Traditional Games", q: "The sun ________ in the east and sets in the west.", options: ["rise", "rising", "rose", "rises"], correct: 3, 
+              exp: "General facts and universal truths take the Simple Present Tense (third-person singular 'rises').",
+              amharic: "የተፈጥሮ ሐቅ እና እውነታዎች በሲምፕል ፕረዘንት (rises) ይገለጻሉ።" },
+            { id: 5, unit: "Unit 1: Traditional Games", q: "I eat toast and ________ tea every morning before school.", options: ["drink", "drinks", "drinking", "drank"], correct: 0, 
+              exp: "Habitual routine with subject 'I' uses the base form of the verb ('drink').",
+              amharic: "በየዕለቱ ልማድ ከርዕሰ ጉዳይ 'I' ጋር የመሠረታዊ ግሱ ቅርፅ 'drink' ጥቅም ላይ ይውላል።" },
+            { id: 6, unit: "Unit 1: Traditional Games", q: "My mother ________ to the market every Saturday morning to buy fresh vegetables.", options: ["go", "goes", "going", "gone"], correct: 1, 
+              exp: "Verbs ending in '-o' (go) add '-es' (goes) for third-person singular subjects.",
+              amharic: "በ '-o' የሚያልቁ ግሶች ለሦስተኛ ሰው ነጠላ '-es' (goes) ይጨምራሉ።" },
+            { id: 7, unit: "Unit 1: Traditional Games", q: "After 'does' or 'doesn't' in a sentence, the main verb must ________.", options: ["add '-s' or '-es'", "be in the past tense", "lose its '-s/-es' and return to base form", "add '-ing'"], correct: 2, 
+              exp: "Grammar Rule: After auxiliary 'does/doesn't', the main verb drops '-s/-es' and remains in base form.",
+              amharic: "ደንብ፦ ከ 'does' ወይም 'doesn't' በኋላ ዋናው ግስ '-s/-es' አጥቶ ወደ መሠረታዊ ቅርፁ ይመለሳል።" },
+            { id: 8, unit: "Unit 1: Traditional Games", q: "A student who ________ hard every day usually gets excellent marks.", options: ["studies", "study", "studys", "is study"], correct: 0, 
+              exp: "Spelling rule: Consonant + 'y' (study) changes 'y' to 'i' and adds '-es' (studies).",
+              amharic: "ፊደል ደንብ፦ ተነባቢ + 'y' ሲኖር 'y' ወደ 'i' ተቀይሮ '-es' ይጨመራል።" },
+            { id: 9, unit: "Unit 1: Traditional Games", q: "We ________ traditional Ethiopia games like Akukulu during our free time.", options: ["plays", "play", "playing", "is play"], correct: 1, 
+              exp: "Plural subject 'We' takes the base verb 'play' in simple present tense.",
+              amharic: "ብዙ ቁጥር ያለው ርዕሰ ጉዳይ 'We' መሠረታዊ ግሱን 'play' ይወስዳል።" },
+            { id: 10, unit: "Unit 1: Traditional Games", q: "Which of the following sentences correctly follows the simple present spelling rule?", options: ["He watchs television every evening.", "She carrys a big basket.", "The traffic police watches the street closely.", "Kebede flys a kite in summer."], correct: 2, 
+              exp: "Verbs ending in '-ch' take '-es' (watches). Options A, B, and D have spelling errors.",
+              amharic: "በ '-ch' የሚያልቁ ግሶች '-es' ይወስዳሉ (watches)።" },
+            { id: 11, unit: "Unit 1: Traditional Games", q: "Look! The children ________ traditional games in the school field right now.", options: ["play", "are playing", "plays", "were playing"], correct: 1, 
+              exp: "'Look!' and 'right now' indicate Present Continuous with plural subject 'children' (are playing).",
+              amharic: "'Look!' እና 'right now' የፕረዘንት ኮንቲኑየስ ጊዜን ያመለክታሉ (are playing)።" },
+            { id: 12, unit: "Unit 1: Traditional Games", q: "Mahlet ________ her favorite book on the beach at the moment.", options: ["is reading", "reads", "read", "was reading"], correct: 0, 
+              exp: "'At the moment' signals Present Continuous; subject 'Mahlet' takes 'is reading'.",
+              amharic: "'At the moment' የፕረዘንት ኮንቲኑየስ ምልክት ነው፤ 'ማህሌት' የሚለው ስም 'is reading' ይወስዳል።" },
+            { id: 13, unit: "Unit 1: Traditional Games", q: "We are not ________ in the river today because the water is too cold and deep.", options: ["swim", "swims", "swimming", "swam"], correct: 2, 
+              exp: "Present Continuous negative structure: Subject + am/is/are + not + Verb-ing.",
+              amharic: "የፕረዘንት ኮንቲኑየስ አሉታዊ አወቃቀር፦ ርዕሰ ጉዳይ + am/is/are + not + ግስ-ing።" },
+            { id: 14, unit: "Unit 1: Traditional Games", q: "Listen! Someone ________ at the gate.", options: ["knock", "is knocking", "knocks", "knocked"], correct: 1, 
+              exp: "Signal word 'Listen!' indicates an action happening at the exact moment of speaking.",
+              amharic: "'Listen!' የሚለው ቃል አሁን በምትነገርበት ሰዓት እየከናወነ ያለ ድርጊት ያሳያል።" },
+            { id: 15, unit: "Unit 1: Traditional Games", q: "He usually walks to school, but today he ________ a bicycle.", options: ["rides", "rode", "is riding", "ride"], correct: 2, 
+              exp: "Contrast rule: Habitual action uses Simple Present ('walks'), but temporary action today uses Present Continuous ('is riding').",
+              amharic: "የልማድ ድርጊት በሲምፕል ፕረዘንት (walks)፣ የዛሬው ጊዜያዊ ድርጊት በፕረዘንት ኮንቲኑየስ (is riding) ይገለጻል።" },
+            { id: 16, unit: "Unit 1: Traditional Games", q: "I ________ a letter to my pen pal right now, so please do not disturb me.", options: ["am writing", "write", "is writing", "was writing"], correct: 0, 
+              exp: "Subject 'I' requires the auxiliary 'am' + verb-ing ('am writing').",
+              amharic: "ርዕሰ ጉዳይ 'I' ከ 'am' እና ከ '-ing' ግስ ጋር 'am writing' ይመሰርታል።" },
+            { id: 17, unit: "Unit 1: Traditional Games", q: "Why ________ you wearing a heavy coat indoors today?", options: ["do", "are", "is", "did"], correct: 1, 
+              exp: "Present Continuous question form for subject 'you' uses auxiliary verb 'are'.",
+              amharic: "ለ 'you' የፕረዘንት ኮንቲኑየስ ጥያቄ 'are' ረዳት ግስ ጥቅም ላይ ይውላል።" },
+            { id: 18, unit: "Unit 1: Traditional Games", q: "Which time signal is NOT associated with the Present Continuous tense?", options: ["right now", "yesterday", "at the moment", "currently"], correct: 1, 
+              exp: "'Yesterday' is a past time expression, not used with Present Continuous.",
+              amharic: "'Yesterday' የያለፈ ጊዜ መግለጫ እንጂ ከፕረዘንት ኮንቲኑየስ ጋር አብሮ አይመጣም።" },
+            { id: 19, unit: "Unit 1: Traditional Games", q: "They ________ preparing the sports ground for tomorrow's big competition.", options: ["am", "is", "are", "be"], correct: 2, 
+              exp: "Plural subject 'They' requires auxiliary 'are' in Present Continuous.",
+              amharic: "ብዙ ቁጥር 'They' ከፕረዘንት ኮንቲኑየስ ጋር 'are' ይፈልጋል።" },
+            { id: 20, unit: "Unit 1: Traditional Games", q: "At present, the government ________ new roads across the city.", options: ["constructs", "is constructing", "constructed", "construct"], correct: 1, 
+              exp: "'At present' indicates an ongoing present action requiring Present Continuous ('is constructing').",
+              amharic: "'At present' አሁን በመከናወን ላይ ያለ ተግባር ስለሚያሳይ 'is constructing' ይገባል።" },
+
+            // UNIT 2 (21-70)
+            { id: 21, unit: "Unit 2: Seasons & Human Activities", q: "Farmers ________ and tilled the fertile land last summer before planting.", options: ["plough", "ploughed", "ploughing", "ploughs"], correct: 1, 
+              exp: "Regular past tense adds '-ed' to the base verb (plough -> ploughed) for completed past actions.",
+              amharic: "መደበኛ ያለፈ ጊዜ ግስ ለመፍጠር '-ed' ይጨመራል (ploughed)።" },
+            { id: 22, unit: "Unit 2: Seasons & Human Activities", q: "Yesterday, Merga and Alem ________ the seeds across the entire field.", options: ["sow", "sowed", "sown", "sowing"], correct: 1, 
+              exp: "Past tense of 'sow' in standard simple past completed action is 'sowed'.",
+              amharic: "የ 'sow' ያለፈ ጊዜ ቅርጽ 'sowed' ነው።" },
+            { id: 23, unit: "Unit 2: Seasons & Human Activities", q: "Last year, the crops ________ very tall due to the good rains.", options: ["grow", "growed", "grew", "grown"], correct: 2, 
+              exp: "Irregular verb 'grow' changes to 'grew' in the Simple Past Tense.",
+              amharic: "መደበኛ ያልሆነው ግስ 'grow' ወደ 'grew' ይቀየራል።" },
+            { id: 24, unit: "Unit 2: Seasons & Human Activities", q: "She did not ________ any fresh vegetables when she was a young child.", options: ["ate", "eats", "eat", "eating"], correct: 2, 
+              exp: "Rule: After negative auxiliary 'did not (didn't)', the main verb must be in base form ('eat').",
+              amharic: "ደንብ፦ ከ 'did not' በኋላ ዋናው ግስ በመሠረታዊ ቅርፁ 'eat' መቀመጥ አለበት።" },
+            { id: 25, unit: "Unit 2: Seasons & Human Activities", q: "Did you ________ the worker for harvesting the wheat yesterday?", options: ["pay", "paid", "pays", "paying"], correct: 0, 
+              exp: "Rule: In Simple Past questions with 'Did', the main verb remains in base form ('pay').",
+              amharic: "ደንብ፦ በ 'Did' ጥያቄዎች ውስጥ ዋናው ግስ በመሠረታዊ ቅርፁ 'pay' ይቀራል።" },
+            { id: 26, unit: "Unit 2: Seasons & Human Activities", q: "The children ________ peacefully after working all day on the farm.", options: ["sleeped", "slept", "sleeps", "sleeping"], correct: 1, 
+              exp: "Irregular verb: Past tense of 'sleep' is 'slept'.",
+              amharic: "የ 'sleep' ያለፈ ጊዜ መደበኛ ያልሆነ ግስ 'slept' ነው።" },
+            { id: 27, unit: "Unit 2: Seasons & Human Activities", q: "Farmers ________ the ripe wheat last month during the harvest season.", options: ["reaped", "reap", "reapes", "reapping"], correct: 0, 
+              exp: "Regular verb 'reap' forms past tense by adding '-ed' (reaped).",
+              amharic: "መደበኛ ግስ 'reap' ያለፈ ጊዜን ለመመስረት 'reaped' ይሆናል።" },
+            { id: 28, unit: "Unit 2: Seasons & Human Activities", q: "We ________ a very large oxen at the market two days ago.", options: ["buy", "buyed", "bought", "buying"], correct: 2, 
+              exp: "Irregular past tense: 'buy' changes to 'bought'.",
+              amharic: "የ 'buy' ያለፈ ጊዜ መደበኛ ያልሆነ ቅርጽ 'bought' ነው።" },
+            { id: 29, unit: "Unit 2: Seasons & Human Activities", q: "Which of the following is an irregular past tense verb?", options: ["ploughed", "tilled", "harvested", "went"], correct: 3, 
+              exp: "'went' (from go) is irregular; the others are regular '-ed' forms.",
+              amharic: "'went' መደበኛ ያልሆነ ያለፈ ጊዜ ግስ ነው፤ ሌሎቹ በ '-ed' የሚያልቁ መደበኛ ናቸው።" },
+            { id: 30, unit: "Unit 2: Seasons & Human Activities", q: "The agricultural officer ________ our school farm last Thursday.", options: ["visited", "visit", "visiting", "visits"], correct: 0, 
+              exp: "'Last Thursday' specifies completed past time, requiring simple past 'visited'.",
+              amharic: "'Last Thursday' ያለፈ ጊዜን ስለሚያሳይ 'visited' ተስማሚ ነው።" },
+            { id: 31, unit: "Unit 2: Seasons & Human Activities", q: "They ________ not clear the field before the heavy rain started.", options: ["do", "did", "does", "are"], correct: 1, 
+              exp: "Past negative helper auxiliary is 'did' (did not).",
+              amharic: "ያለፈ ጊዜ አሉታዊ አረፍተ ነገር ረዳት ግስ 'did' ነው።" },
+            { id: 32, unit: "Unit 2: Seasons & Human Activities", q: "What ________ you do during the autumn season last year?", options: ["do", "does", "did", "done"], correct: 2, 
+              exp: "Simple past question format takes auxiliary 'did'.",
+              amharic: "ለባለፈው ጊዜ ጥያቄ 'did' ረዳት ግስ ጥቅም ላይ ይውላል።" },
+            { id: 33, unit: "Unit 2: Seasons & Human Activities", q: "The birds ________ south when winter approached.", options: ["flyed", "flew", "flown", "flies"], correct: 1, 
+              exp: "Irregular past tense of 'fly' is 'flew'.",
+              amharic: "የ 'fly' ያለፈ ጊዜ 'flew' ነው።" },
+            { id: 34, unit: "Unit 2: Seasons & Human Activities", q: "I ________ my homework before going out to play traditional games.", options: ["finished", "finish", "finishing", "finishes"], correct: 0, 
+              exp: "Completed past action requires Simple Past tense ('finished').",
+              amharic: "የተጠናቀቀ የያለፈ ጊዜ ተግባር ሲምፕል ፓስት (finished) ይፈልጋል።" },
+            { id: 35, unit: "Unit 2: Seasons & Human Activities", q: "He ________ a handsome amount of money after selling his grain.", options: ["make", "maked", "made", "making"], correct: 2, 
+              exp: "Irregular past tense of 'make' is 'made'.",
+              amharic: "የ 'make' ያለፈ ጊዜ መደበኛ ያልሆነ ቅርጽ 'made' ነው።" },
+            { id: 36, unit: "Unit 2: Seasons & Human Activities", q: "Meron ________ live next door to me when we were in primary school.", options: ["use to", "used to", "using to", "uses to"], correct: 1, 
+              exp: "'used to + base verb' expresses past habits or states that no longer exist.",
+              amharic: "'used to' በጊዜ ሂደት የነበረ የድሮ ልማድ ወይም ሁኔታ ያሳያል።" },
+            { id: 37, unit: "Unit 2: Seasons & Human Activities", q: "When I was younger, I used to ________ in the river during summer.", options: ["swim", "swam", "swimming", "swims"], correct: 0, 
+              exp: "'used to' is always followed by the base form of the verb ('swim').",
+              amharic: "'used to' ሁልጊዜ ከመሠረታዊ ግስ 'swim' ጋር አብሮ ይመጣል።" },
+            { id: 38, unit: "Unit 2: Seasons & Human Activities", q: "They didn't ________ like eating spicy food, but now they love it.", options: ["used to", "use to", "uses to", "using to"], correct: 1, 
+              exp: "Rule: In negative sentences with 'didn't', 'used to' drops the 'd' and becomes 'use to'.",
+              amharic: "ደንብ፦ በ 'didn't' አሉታዊ አረፍተ ነገር ውስጥ 'used to' ፊደል 'd'ን አጥቶ 'use to' ይሆናል።" },
+            { id: 39, unit: "Unit 2: Seasons & Human Activities", q: "________ your father use to travel on horseback when he was a boy?", options: ["Do", "Does", "Did", "Was"], correct: 2, 
+              exp: "Past habitual question form uses auxiliary 'Did' + subject + 'use to'.",
+              amharic: "የድሮ ልማድ ጥያቄ ቅፅ በ 'Did' ይጀምራል።" },
+            { id: 40, unit: "Unit 2: Seasons & Human Activities", q: "We used to ________ traditional songs during community gatherings.", options: ["sang", "sing", "sung", "singing"], correct: 1, 
+              exp: "'used to' takes base form verb 'sing'.",
+              amharic: "'used to' መሠረታዊ ግሱን 'sing' ይወስዳል።" },
+            { id: 41, unit: "Unit 2: Seasons & Human Activities", q: "The kids were playing in the garden when it suddenly ________ to rain.", options: ["begin", "began", "was beginning", "begins"], correct: 1, 
+              exp: "Interrupted past action: Ongoing long action (Past Continuous) is interrupted by a short action (Simple Past 'began').",
+              amharic: "የተቋረጠ ያለፈ ጊዜ ድርጊት፦ ረዘም ያለ ተግባር በፓስት ኮንቲኑየስ ሲገለጽ አቋራጩ ተግባር በሲምፕል ፓስት (began) ይጻፋል።" },
+            { id: 42, unit: "Unit 2: Seasons & Human Activities", q: "Alemu ________ wheat when a snake suddenly appeared in the grass.", options: ["is mowing", "was mowing", "mowed", "mows"], correct: 1, 
+              exp: "Ongoing past action before an interruption uses Past Continuous ('was mowing').",
+              amharic: "ከማስተጓጎሉ በፊት በሂደት ላይ የነበረ ድርጊት በፓስት ኮንቲኑየስ (was mowing) ይገለጻል።" },
+            { id: 43, unit: "Unit 2: Seasons & Human Activities", q: "I was studying for my English exam while my brother ________ dinner.", options: ["was preparing", "prepared", "prepares", "is preparing"], correct: 0, 
+              exp: "Parallel past actions connected by 'while' both take Past Continuous ('was preparing').",
+              amharic: "በ 'while' የተያያዙ በአንድ ጊዜ ያለፈ ውስጥ የተከናወኑ ድርጊቶች ሁለቱም ፓስት ኮንቲኑየስ ይወስዳሉ።" },
+            { id: 44, unit: "Unit 2: Seasons & Human Activities", q: "At midnight last night, we ________ through the desert towards the city.", options: ["drove", "were driving", "are driving", "drive"], correct: 1, 
+              exp: "A specific ongoing moment in the past takes Past Continuous ('were driving').",
+              amharic: "ባለፈው ሌሊት በተወሰነ ሰዓት በሂደት ላይ የነበረ ድርጊት በፓስት ኮንቲኑየስ (were driving) ይታያል።" },
+            { id: 45, unit: "Unit 2: Seasons & Human Activities", q: "They ________ not listening when the teacher gave the assessment instructions.", options: ["were", "was", "are", "did"], correct: 0, 
+              exp: "Plural subject 'They' takes 'were not' in Past Continuous negative.",
+              amharic: "ብዙ ቁጥር 'They' በፓስት ኮንቲኑየስ አሉታዊ አረፍተ ነገር 'were' ይወስዳል።" },
+            { id: 46, unit: "Unit 2: Seasons & Human Activities", q: "What ________ you doing when the fire alarm sounded yesterday?", options: ["was", "did", "were", "are"], correct: 2, 
+              exp: "Question structure in Past Continuous for 'you' uses auxiliary 'were'.",
+              amharic: "ለ 'you' የፓስት ኮንቲኑየስ ጥያቄ 'were' ረዳት ግስ ይጠቀማል።" },
+            { id: 47, unit: "Unit 2: Seasons & Human Activities", q: "While the farmers were ploughing, the birds ________ over the field.", options: ["were flying", "flew", "fly", "are flying"], correct: 0, 
+              exp: "Parallel continuous actions happening simultaneously in the past use Past Continuous.",
+              amharic: "በተመሳሳይ ጊዜ ያለፈ ውስጥ የተከናወኑ ቀጣይ ድርጊቶች ፓስት ኮንቲኑየስ ይጠቀማሉ።" },
+            { id: 48, unit: "Unit 2: Seasons & Human Activities", q: "She was walking home when she ________ her lost money on the road.", options: ["was finding", "found", "finds", "find"], correct: 1, 
+              exp: "Interruption event taking place suddenly in the past takes Simple Past ('found').",
+              amharic: "ድንገት ጣልቃ የገባው ድርጊት በሲምፕል ፓስት (found) ይገለጻል።" },
+            { id: 49, unit: "Unit 2: Seasons & Human Activities", q: "I ________ writing my essay when the electric power went out.", options: ["was", "were", "am", "did"], correct: 0, 
+              exp: "Subject 'I' takes auxiliary 'was' in Past Continuous.",
+              amharic: "ርዕሰ ጉዳይ 'I' ከፓስት ኮንቲኑየስ ጋር 'was' ይወስዳል።" },
+            { id: 50, unit: "Unit 2: Seasons & Human Activities", q: "The students were listening carefully while the traffic officer ________ the signs.", options: ["was explaining", "explained", "explains", "is explaining"], correct: 0, 
+              exp: "'while' joins two simultaneous continuous past actions ('was explaining').",
+              amharic: "'while' ሁለት ትይዩ የሆኑ ቀጣይ ያለፈ ጊዜ ድርጊቶችን ያያይዛል።" },
+            { id: 51, unit: "Unit 2: Seasons & Human Activities", q: "We took a ________ break during our long walk across the valley.", options: ["ten-minutes", "ten-minute", "ten minute's", "ten minutes"], correct: 1, 
+              exp: "Compound adjective structure (Number + Noun) uses singular noun form joined by a hyphen ('ten-minute').",
+              amharic: "ውህድ መግለጫ (ቁጥር + ስም) ሲሠራ ስሙ ነጠላ ሆኖ በሰሌን (hyphen) ይያያዛል።" },
+            { id: 52, unit: "Unit 2: Seasons & Human Activities", q: "She is a very ________ student who always finishes her homework on time.", options: ["hard-working", "hard-worked", "working-hard", "hard-works"], correct: 0, 
+              exp: "Structure: Adjective/Adverb + Present Participle ('hard-working').",
+              amharic: "መዋቅር፦ ቅጽል/ተውላጠ ግስ + ፕረዘንት ፓርቲሲፕል (hard-working)።" },
+            { id: 53, unit: "Unit 2: Seasons & Human Activities", q: "There is nothing better than drinking an ________ juice on a hot sunny day.", options: ["ice-free", "cold-ice", "ice-cold", "icy-coldly"], correct: 2, 
+              exp: "Structure: Noun + Adjective ('ice-cold').",
+              amharic: "መዋቅር፦ ስም + ቅጽል (ice-cold)።" },
+            { id: 54, unit: "Unit 2: Seasons & Human Activities", q: "The bakery in our neighborhood sells delicious ________ bread every morning.", options: ["home-made", "home-making", "make-home", "home-makes"], correct: 0, 
+              exp: "Structure: Noun + Past Participle ('home-made').",
+              amharic: "መዋቅር፦ ስም + ያለፈ ጊዜ ፓርቲሲፕል (home-made)።" },
+            { id: 55, unit: "Unit 2: Seasons & Human Activities", q: "Derartu Tulu is a ________ athlete who won many international medals.", options: ["record-breaking", "record-broken", "break-record", "record-breaks"], correct: 0, 
+              exp: "Structure: Noun + Present Participle ('record-breaking').",
+              amharic: "መዋቅር፦ ስም + ፕረዘንት ፓርቲሲፕል (record-breaking)።" },
+            { id: 56, unit: "Unit 2: Seasons & Human Activities", q: "Beware of that ________ man; he gets angry very quickly.", options: ["bad-temper", "bad-tempered", "badly-temper", "bad-temperings"], correct: 1, 
+              exp: "Structure: Adjective + Noun-ed / Past Participle ('bad-tempered').",
+              amharic: "መዋቅር፦ ቅጽል + ስም-ed / ያለፈ ፓርቲሲፕል (bad-tempered)።" },
+            { id: 57, unit: "Unit 2: Seasons & Human Activities", q: "All public transport vehicles must remain ________ for passengers' health.", options: ["smoke-free", "smoking-free", "free-smoke", "smoked-free"], correct: 0, 
+              exp: "Structure: Noun + Adjective ('smoke-free').",
+              amharic: "መዋቅር፦ ስም + ቅጽል (smoke-free)።" },
+            { id: 58, unit: "Unit 2: Seasons & Human Activities", q: "They live in a ________ house built near the foot of the mountain.", options: ["three-room", "three-rooms", "three roomed", "three-rooming"], correct: 0, 
+              exp: "Number + Noun compound modifier remains singular ('three-room').",
+              amharic: "ቁጥር እና ስም ውህድ መግለጫ ሲሆን ስሙ ነጠላ ሆኖ ይጻፋል።" },
+            { id: 59, unit: "Unit 2: Seasons & Human Activities", q: "The teacher gave us a ________ video to watch about environmental protection.", options: ["five-minutes", "five-minute", "five minutes", "five-minuted"], correct: 1, 
+              exp: "Hyphenated modifier before a noun requires singular time unit ('five-minute').",
+              amharic: "በሰሌን የተያያዘ የጊዜ መግለጫ ቅጽል ሆኖ ሲያገለግል ነጠላ መሆን አለበት።" },
+            { id: 60, unit: "Unit 2: Seasons & Human Activities", q: "Which of the following is a correctly formed compound adjective?", options: ["a world-famous singer", "a world-fame singer", "a famous-world singer", "a worlding-famous singer"], correct: 0, 
+              exp: "'world-famous' is a standard Noun + Adjective compound adjective.",
+              amharic: "'world-famous' ትክክለኛ ውህድ ቅጽል ነው።" },
+            { id: 61, unit: "Unit 2: Seasons & Human Activities", q: "The sun ________ rise tomorrow morning at dawn.", options: ["may", "will", "might", "could"], correct: 1, 
+              exp: "'Will' expresses 100% certainty about absolute facts or guaranteed future events.",
+              amharic: "'Will' መቶ በመቶ እርግጠኛ የሆኑ የተፈጥሮ ሐቆችን ወይም ዋስትና ያላቸውን ጉዳዮች ያሳያል።" },
+            { id: 62, unit: "Unit 2: Seasons & Human Activities", q: "If you sow seeds without proper spacing, you ________ yield less harvest.", options: ["will", "may", "should", "won't"], correct: 1, 
+              exp: "'May' expresses 50% possibility under variable conditions.",
+              amharic: "'May' ሃምሳ በመቶ የሚሆን ዕድል ወይም አጋጣሚ ያሳያል።" },
+            { id: 63, unit: "Unit 2: Seasons & Human Activities", q: "If farmers take loans on time, they ________ buy fertilizers before the rainy season starts.", options: ["should", "will not", "might not", "couldn't"], correct: 0, 
+              exp: "'Should' expresses high probability/expectation (~70%-90% certainty).",
+              amharic: "'Should' ከፍተኛ ግምት ወይም ጥበቃን (70-90%) ያሳያል።" },
+            { id: 64, unit: "Unit 2: Seasons & Human Activities", q: "Even in times of little rain, innovative farmers ________ grow crops using irrigation.", options: ["could", "will definitely", "shall", "must not"], correct: 0, 
+              exp: "'Could' / 'Might' expresses lower possibility (~30%-40%).",
+              amharic: "'Could' ዝቅተኛ የመሆን ዕድልን (30-40%) ያሳያል።" },
+            { id: 65, unit: "Unit 2: Seasons & Human Activities", q: "Look at those clear blue skies; it ________ rain today.", options: ["will", "won't", "may", "should"], correct: 1, 
+              exp: "'Won't' expresses 100% negative certainty based on clear evidence.",
+              amharic: "'Won't' በግልጽ ማስረጃ ላይ በመመስረት መቶ በመቶ እርግጠኛ ያለመሆንን ያሳያል።" },
+            { id: 66, unit: "Unit 2: Seasons & Human Activities", q: "Which modal verb represents approximately 50% possibility?", options: ["Will", "Should", "May", "Could"], correct: 2, 
+              exp: "According to grammar rules, 'May' represents ~50% probability.",
+              amharic: "እንደ ግራመር ደንቦች 'May' 50 በመቶ ዕድልን ይወክላል።" },
+            { id: 67, unit: "Unit 2: Seasons & Human Activities", q: "He has been studying all week, so he ________ pass the test easily.", options: ["should", "might", "could", "may not"], correct: 0, 
+              exp: "High probability based on logical expectation takes 'should' (70-90%).",
+              amharic: "በምክንያታዊ ግምት ላይ የተመሠረተ ከፍተኛ ዕድል 'should' ይወስዳል።" },
+            { id: 68, unit: "Unit 2: Seasons & Human Activities", q: "Take an umbrella with you; it ________ rain later this afternoon.", options: ["will", "might", "won't", "must"], correct: 1, 
+              exp: "Uncertain future possibility (~30-40%) uses 'might'.",
+              amharic: "ያልተረጋገጠ የወደፊት ዕድልን ለማሳየት 'might' ይጠቀማል።" },
+            { id: 69, unit: "Unit 2: Seasons & Human Activities", q: "If you don't water the young plants, they ________ die.", options: ["will", "should", "could", "may"], correct: 0, 
+              exp: "Certain consequence of natural law uses 100% certainty 'will'.",
+              amharic: "የተፈጥሮ ሕግ እርግጠኛ ውጤት 'will' ይጠይቃል።" },
+            { id: 70, unit: "Unit 2: Seasons & Human Activities", q: "Expressing a slight or low possibility (~30-40%) is best done using ________.", options: ["will", "should", "could or might", "must"], correct: 2, 
+              exp: "Grammar Rule: 'Could' and 'Might' indicate lower degree of possibility (30-40%).",
+              amharic: "ደንብ፦ 'Could' እና 'Might' ዝቅተኛ የመሆን ዕድልን (30-40%) ያመለክታሉ።" },
+
+            // UNIT 3 (71-100)
+            { id: 71, unit: "Unit 3: Traffic Police Officers", q: "The traffic police officer ________ train the students on road safety tomorrow morning.", options: ["will", "is going", "shall to", "went"], correct: 0, 
+              exp: "Instant decisions, predictions, or promises take 'will + base verb'.",
+              amharic: "ትንበያዎች እና ውሳኔዎች 'will + መሠረታዊ ግስ' ይወስዳሉ።" },
+            { id: 72, unit: "Unit 3: Traffic Police Officers", q: "Look at those dark clouds! It ________ rain very soon.", options: ["will", "is going to", "is raining", "shall"], correct: 1, 
+              exp: "'Be going to' is used for predictions based on present physical evidence.",
+              amharic: "አሁን ባለው ግልጽ ማስረጃ ላይ ተመስርቶ ለሚደረግ ትንበያ 'is going to' ይጠቀማል።" },
+            { id: 73, unit: "Unit 3: Traffic Police Officers", q: "I have already bought my ticket; I ________ to Bahir Dar in November.", options: ["travel", "am traveling", "traveled", "will travel"], correct: 1, 
+              exp: "Fixed personal arrangements with specific time/place use Present Continuous for future.",
+              amharic: "ቅድመ ዝግጅት የተደረገላቸው የግል እቅዶች ለወደፊት ጊዜ በፕረዘንት ኮንቲኑየስ ይገለጻሉ።" },
+            { id: 74, unit: "Unit 3: Traffic Police Officers", q: "I ________ join the student traffic patrol force next month; I have already submitted my form.", options: ["am going to", "will", "shall", "went to"], correct: 0, 
+              exp: "'Be going to' expresses prior intentions and planned decisions.",
+              amharic: "'Be going to' ቀድሞ የታቀዱ ሃሳቦችን እና ውሳኔዎችን ያሳያል።" },
+            { id: 75, unit: "Unit 3: Traffic Police Officers", q: "Don't worry about the heavy bags; I ________ carry them for you.", options: ["am going to", "will", "am carrying", "carried"], correct: 1, 
+              exp: "'Will' is used for spontaneous offers made at the moment of speaking.",
+              amharic: "በምነጋገርበት ሰዓት ለሚደረግ ድንገተኛ እርዳታ 'will' ይጠቀማል።" },
+            { id: 76, unit: "Unit 3: Traffic Police Officers", q: "My driving course ________ next Monday at eight o'clock.", options: ["start", "is starting", "started", "going to start"], correct: 1, 
+              exp: "Fixed future arrangement on a schedule uses Present Continuous.",
+              amharic: "በመርሐ-ግብር የተያዘ የወደፊት ዝግጅት በፕረዘንት ኮንቲኑየስ ይገለጻል።" },
+            { id: 77, unit: "Unit 3: Traffic Police Officers", q: "Car drivers ________ be responsible to ensure pedestrians are safe on crosswalks.", options: ["will", "going to", "are going", "shall to"], correct: 0, 
+              exp: "General statement of future obligation / state takes 'will'.",
+              amharic: "አጠቃላይ የወደፊት ግዴታን ለመግለጽ 'will' ይጠቀማል።" },
+            { id: 78, unit: "Unit 3: Traffic Police Officers", q: "The traffic department ________ revise some of its safety rules next year.", options: ["is going to", "will to", "shall going to", "is go to"], correct: 0, 
+              exp: "Planned department policy/intention uses 'is going to + base verb'.",
+              amharic: " የታቀደ የመሥሪያ ቤት ፖሊሲ 'is going to + መሠረታዊ ግስ' ይወስዳል።" },
+            { id: 79, unit: "Unit 3: Traffic Police Officers", q: "________ I open the window for you? It is very warm in here.", options: ["Will", "Shall", "Am going to", "Would"], correct: 1, 
+              exp: "'Shall I...?' is used for polite suggestions or offers in first person.",
+              amharic: "'Shall I...?' ለአስተያየት ጥቆማ ወይም የትህትና ማቅረቢያ ያገለግላል።" },
+            { id: 80, unit: "Unit 3: Traffic Police Officers", q: "Which sentence expresses a prior intention or plan?", options: ["I will answer the phone.", "I am going to study engineering when I grow up.", "I'll help you carry that.", "Shall we leave now?"], correct: 1, 
+              exp: "'Be going to' explicitly expresses long-term prior plans or intentions.",
+              amharic: "'Be going to' የረጅም ጊዜ ቀድሞ የታቀደ እቅድን በግልጽ ያሳያል።" },
+            { id: 81, unit: "Unit 3: Traffic Police Officers", q: "A good traffic officer ________ control heavy traffic manually during power outages.", options: ["can", "must to", "ought", "should to"], correct: 0, 
+              exp: "'Can' expresses general ability.",
+              amharic: "'Can' አጠቃላይ ችሎታን ወይም አቅምን ያሳያል።" },
+            { id: 82, unit: "Unit 3: Traffic Police Officers", q: "You ________ park your vehicle here; it is strictly prohibited by traffic law.", options: ["cannot", "shouldn't", "may", "might not"], correct: 0, 
+              exp: "'Cannot / Can't' or 'Mustn't' indicates prohibition by rules/law.",
+              amharic: "'Cannot' በሕግ የተከለከለ ክልከላን ያሳያል።" },
+            { id: 83, unit: "Unit 3: Traffic Police Officers", q: "________ I see your driving license and registration papers, please?", options: ["Must", "May", "Should", "Ought"], correct: 1, 
+              exp: "'May I...?' is used for formal polite permission requests.",
+              amharic: "'May I...?' የትህትና ፈቃድ ለመጠየቅ ያገለግላል።" },
+            { id: 84, unit: "Unit 3: Traffic Police Officers", q: "Pedestrians ________ cross the street at the zebra crossing for their safety.", options: ["should", "must to", "ought", "can to"], correct: 0, 
+              exp: "'Should' indicates strong advice and recommendation.",
+              amharic: "'Should' ጠንካራ ምክር እና ማሳሰቢያ ይሰጣል።" },
+            { id: 85, unit: "Unit 3: Traffic Police Officers", q: "Drivers ________ stop immediately when the traffic lights turn red.", options: ["should", "may", "must", "could"], correct: 2, 
+              exp: "'Must' expresses strict obligation and legal requirements.",
+              amharic: "'Must' ጥብቅ ግዴታን እና የሕግ መስፈርትን ያሳያል።" },
+            { id: 86, unit: "Unit 3: Traffic Police Officers", q: "You ________ drive if you are drunk; it is extremely dangerous and illegal.", options: ["must not", "don't have to", "shouldn't to", "might not"], correct: 0, 
+              exp: "'Must not / Mustn't' expresses strict prohibition.",
+              amharic: "'Must not' ጥብቅ ክልከላን (አይደረግም) ያሳያል።" },
+            { id: 87, unit: "Unit 3: Traffic Police Officers", q: "Citizens ________ to obey traffic signs to prevent roadside accidents.", options: ["should", "must", "ought", "can"], correct: 2, 
+              exp: "'Ought' is followed by 'to' (ought to) to express moral duty/obligation.",
+              amharic: "'Ought' ከ 'to' ጋር (ought to) የሞራል ግዴታን ያሳያል።" },
+            { id: 88, unit: "Unit 3: Traffic Police Officers", q: "________ you please slow down when driving past school zones?", options: ["Could", "Must", "Should", "May"], correct: 0, 
+              exp: "'Could you...?' expresses a polite request.",
+              amharic: "'Could you...?' የትህትና ጥያቄ ለማቅረብ ያገለግላል።" },
+            { id: 89, unit: "Unit 3: Traffic Police Officers", q: "When he was younger, my grandfather ________ run very fast.", options: ["can", "could", "may", "must"], correct: 1, 
+              exp: "'Could' expresses past ability.",
+              amharic: "'Could' ያለፈ ጊዜ ችሎታን ያሳያል።" },
+            { id: 90, unit: "Unit 3: Traffic Police Officers", q: "Which modal auxiliary carries the strongest sense of legal obligation?", options: ["Should", "Might", "Must", "Can"], correct: 2, 
+              exp: "'Must' represents absolute rule, law, and legal necessity.",
+              amharic: "'Must' ፍጹም ሕግ እና ሕጋዊ ግዴታን ይወክላል።" },
+            { id: 91, unit: "Unit 3: Traffic Police Officers", q: "________ straight ahead until you reach the traffic lights.", options: ["Going", "Go", "You go", "Gone"], correct: 1, 
+              exp: "Imperatives begin with the base form of the verb without a subject.",
+              amharic: "ትዕዛዞች ያለ ርዕሰ ጉዳይ በመሠረታዊ ግስ ይጀምራሉ።" },
+            { id: 92, unit: "Unit 3: Traffic Police Officers", q: "________ left into the museum grounds after passing the roundabout.", options: ["Turning", "Turned", "Turn", "You turn"], correct: 2, 
+              exp: "Imperative command for direction uses base verb 'Turn'.",
+              amharic: "ለአቅጣጫ የሚሰጥ ትዕዛዝ መሠረታዊ ግስ 'Turn' ይጠቀማል።" },
+            { id: 93, unit: "Unit 3: Traffic Police Officers", q: "________ the street only when the pedestrian light turns green.", options: ["Cross", "Crossing", "Crossed", "To cross"], correct: 0, 
+              exp: "Giving instruction/order requires base verb 'Cross'.",
+              amharic: "ትዕዛዝ ወይም መመሪያ ለመስጠት መሠረታዊ ግስ 'Cross' ያስፈልጋል።" },
+            { id: 94, unit: "Unit 3: Traffic Police Officers", q: "________ on sidewalks whenever they are available to stay safe from traffic.", options: ["Walking", "Walk", "Walked", "You walk"], correct: 1, 
+              exp: "Imperative safety instruction uses base verb 'Walk'.",
+              amharic: "የደህንነት መመሪያ ትዕዛዝ መሠረታዊ ግስ 'Walk' ይጠቀማል።" },
+            { id: 95, unit: "Unit 3: Traffic Police Officers", q: "________ traffic signs at all times to avoid dangerous collisions.", options: ["Obeying", "Obey", "Obeys", "Obeyed"], correct: 1, 
+              exp: "Direct instruction starts with base verb 'Obey'.",
+              amharic: "ቀጥተኛ ትዕዛዝ በመሠረታዊ ግስ 'Obey' ይጀምራል።" },
+            { id: 96, unit: "Unit 3: Traffic Police Officers", q: "________ along this road for two blocks, then turn right at the bank.", options: ["Walk", "Walking", "Walked", "To walk"], correct: 0, 
+              exp: "Direction sentence starts with base verb 'Walk'.",
+              amharic: "የአቅጣጫ አሰጣጥ ዓረፍተ ነገር በመሠረታዊ ግስ ይጀምራል።" },
+            { id: 97, unit: "Unit 3: Traffic Police Officers", q: "________ not drive above the speed limit in residential areas!", options: ["Do", "Does", "Did", "Are"], correct: 0, 
+              exp: "Negative imperative structure: 'Do not' (Don't) + base verb.",
+              amharic: "አሉታዊ ትዕዛዝ አወቃቀር፦ 'Do not' + መሠረታዊ ግስ።" },
+            { id: 98, unit: "Unit 3: Traffic Police Officers", q: "Which of the following is a correctly formed negative imperative instruction?", options: ["Not stop here!", "Don't stop here!", "Doesn't stop here!", "No stopping here!"], correct: 1, 
+              exp: "Negative imperatives are formed with 'Don't + base verb'.",
+              amharic: "አሉታዊ ትዕዛዞች በ 'Don't + መሠረታዊ ግስ' ይመሰረታሉ።" },
+            { id: 99, unit: "Unit 3: Traffic Police Officers", q: "________ the safety rules of the road whenever you ride your bicycle.", options: ["Followed", "Following", "Follow", "Follows"], correct: 2, 
+              exp: "Imperative rule statement begins with base verb 'Follow'.",
+              amharic: "የትዕዛዝ ደንብ መግለጫ በመሠረታዊ ግስ 'Follow' ይጀምራል።" },
+            { id: 100, unit: "Unit 3: Traffic Police Officers", q: "________ right at the intersection to find the traffic police station.", options: ["Takes", "Taking", "Take", "Took"], correct: 2, 
+              exp: "Giving directions uses base verb 'Take'.",
+              amharic: "አቅጣጫ ሲጠቆም መሠረታዊ ግስ 'Take' ጥቅም ላይ ይውላል።" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let studentAnswers = new Array(questionsData.length).fill(null);
+        let studentName = "";
+        let studentId = "";
+        let timerInterval = null;
+        let timeLeft = 150 * 60; // 150 minutes in seconds
+
+        // Start Quiz Handler
+        function startQuiz(event) {
+            event.preventDefault();
+            studentName = document.getElementById('student-name').value.trim();
+            studentId = document.getElementById('student-id').value.trim();
+
+            if (!studentName || !studentId) return;
+
+            document.getElementById('id-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.remove('hidden');
+            
+            startTimer();
+            renderQuestion();
+        }
+
+        // Timer Function
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                    return;
+                }
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('time').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}minute`;
+            }, 1000);
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = questionsData[currentQuestionIndex];
+            
+            // Progress Update
+            const progressPercent = Math.round(((currentQuestionIndex + 1) / questionsData.length) * 100);
+            document.getElementById('progress-text').innerText = `Question ${currentQuestionIndex + 1} of ${questionsData.length}`;
+            document.getElementById('progress-percent').innerText = `${progressPercent}%`;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('unit-badge').innerText = q.unit;
+
+            // Question Content
+            document.getElementById('question-number-badge').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-title').innerText = q.q;
+
+            // Options Container
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const selectedAnswer = studentAnswers[currentQuestionIndex];
+            const isAnswered = selectedAnswer !== null;
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = selectedAnswer === idx;
+                const isCorrectOption = q.correct === idx;
+
+                let btnClass = "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between font-medium text-sm sm:text-base ";
+                
+                if (!isAnswered) {
+                    btnClass += "bg-white border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/30 text-slate-700 shadow-sm";
+                } else {
+                    if (isCorrectOption) {
+                        btnClass += "bg-emerald-50 border-emerald-500 text-emerald-900 shadow-sm ring-1 ring-emerald-500";
+                    } else if (isSelected && !isCorrectOption) {
+                        btnClass += "bg-rose-50 border-rose-500 text-rose-900 shadow-sm ring-1 ring-rose-500";
+                    } else {
+                        btnClass += "bg-white border-slate-200 text-slate-400 opacity-60";
+                    }
+                }
+
+                const button = document.createElement('button');
+                button.className = btnClass;
+                button.disabled = isAnswered;
+                button.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600">${String.fromCharCode(65 + idx)}</span>
+                        <span>${opt}</span>
+                    </span>
+                    ${isAnswered && isCorrectOption ? '<span class="text-emerald-600 font-bold text-xs uppercase px-2 py-1 bg-emerald-100 rounded-lg">Correct</span>' : ''}
+                    ${isAnswered && isSelected && !isCorrectOption ? '<span class="text-rose-600 font-bold text-xs uppercase px-2 py-1 bg-rose-100 rounded-lg">Your Answer</span>' : ''}
+                `;
+                button.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(button);
+            });
+
+            // Feedback Box Handling
+            const feedbackBox = document.getElementById('feedback-box');
+            if (isAnswered) {
+                feedbackBox.classList.remove('hidden');
+                const isCorrect = selectedAnswer === q.correct;
+                const iconEl = document.getElementById('feedback-icon');
+                const headingEl = document.getElementById('feedback-heading');
+                const textEl = document.getElementById('feedback-text');
+                const amharicEl = document.getElementById('feedback-amharic');
+
+                if (isCorrect) {
+                    feedbackBox.className = "rounded-2xl p-5 mb-8 border bg-emerald-50/80 border-emerald-200 text-emerald-900";
+                    iconEl.innerHTML = "🎉";
+                    headingEl.innerText = "Correct! Excellent job.";
+                } else {
+                    feedbackBox.className = "rounded-2xl p-5 mb-8 border bg-rose-50/80 border-rose-200 text-rose-900";
+                    iconEl.innerHTML = "❌";
+                    headingEl.innerText = `Incorrect. The correct answer is Option ${String.fromCharCode(65 + q.correct)}: ${q.options[q.correct]}`;
+                }
+                textEl.innerText = q.exp;
+                amharicEl.innerText = q.amharic;
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Button States
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            const nextBtnText = document.getElementById('next-btn-text');
+            if (currentQuestionIndex === questionsData.length - 1) {
+                nextBtnText.innerText = "Submit Assessment";
+            } else {
+                nextBtnText.innerText = "Next";
+            }
+        }
+
+        // Select Option & Instant Feedback (Irreversible)
+        function selectOption(optionIndex) {
+            if (studentAnswers[currentQuestionIndex] !== null) return; // Irreversible once selected
+            studentAnswers[currentQuestionIndex] = optionIndex;
+            renderQuestion();
+        }
+
+        // Navigation Handlers
+        function nextQuestion() {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function skipQuestion() {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        // Submit Quiz
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate Score
+            let score = 0;
+            questionsData.forEach((q, idx) => {
+                if (studentAnswers[idx] === q.correct) score++;
+            });
+
+            const percent = Math.round((score / questionsData.length) * 100);
+
+            // Save record to localStorage for Teacher Dashboard
+            saveTeacherRecord(studentName, studentId, score, percent);
+
+            // Display Results Section
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+
+            document.getElementById('res-name').innerText = studentName;
+            document.getElementById('res-id').innerText = studentId;
+            document.getElementById('res-score').innerText = `${score} / ${questionsData.length}`;
+            document.getElementById('res-percent').innerText = `${percent}%`;
+        }
+
+        // Email Score Feature
+        function sendScoreEmail() {
+            let scoreText = document.getElementById('res-score').innerText;
+            let percentText = document.getElementById('res-percent').innerText;
+            
+            const subject = encodeURIComponent(`Grade 6 Grammar Assessment Score - ${studentName} (${studentId})`);
+            const body = encodeURIComponent(`Dear Teacher Mesay Feredegn,\n\nHere are my assessment results:\n\nStudent Name: ${studentName}\nStudent ID: ${studentId}\nFinal Score: ${scoreText} (${percentText})\n\nThank you!\nBest regards,\n${studentName}`);
+            
+            window.location.href = `mailto:mesayferedegn2@gmail.com?subject=${subject}&body=${body}`;
+        }
+
+        // Retake Assessment
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            studentAnswers = new Array(questionsData.length).fill(null);
+            timeLeft = 150 * 60;
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('id-section').classList.remove('hidden');
+            document.getElementById('registration-form').reset();
+        }
+
+        // Teacher Dashboard Management
+        function toggleTeacherDashboard() {
+            const modal = document.getElementById('teacher-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                loadTeacherRecords();
+            }
+        }
+
+        function saveTeacherRecord(name, id, score, percent) {
+            let records = JSON.parse(localStorage.getItem('grade6_quiz_records') || '[]');
+            records.push({
+                name,
+                id,
+                score,
+                percent,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('grade6_quiz_records', JSON.stringify(records));
+        }
+
+        function loadTeacherRecords() {
+            const container = document.getElementById('teacher-records-container');
+            let records = JSON.parse(localStorage.getItem('grade6_quiz_records') || '[]');
+            
+            if (records.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">No student records found yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = records.map((rec, idx) => `
+                <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">${rec.name} <span class="text-xs font-normal text-slate-500">(${rec.id})</span></h4>
+                        <p class="text-xs text-slate-400">Completed on: ${rec.date}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-xl">${rec.score} / 100 (${rec.percent}%)</span>
+                    </div>
+                </div>
+            `).reverse().join('');
+        }
+
+        function clearRecords() {
+            localStorage.removeItem('grade6_quiz_records');
+            loadTeacherRecords();
+        }
+
+        // Dedicated Narrator (British Woman Accent via Web Speech Synthesis)
+        function speakCurrentQuestion() {
+            if (!('speechSynthesis' in window)) {
+                return;
+            }
+            window.speechSynthesis.cancel(); // Stop any ongoing speech
+            const q = questionsData[currentQuestionIndex];
+            const textToSpeak = `Question ${currentQuestionIndex + 1}. ${q.q}. Options are: ${q.options.map((opt, i) => `${String.fromCharCode(65 + i)}, ${opt}`).join('. ')}`;
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+
+            // Attempt to find a British female voice
+            const voices = window.speechSynthesis.getVoices();
+            const ukFemaleVoice = voices.find(v => (v.lang.includes('en-GB') || v.name.includes('UK') || v.name.includes('British')) && (v.name.includes('Female') || v.name.includes('Hazel') || v.name.includes('Susan') || v.name.includes('Victoria') || v.name.includes('Libby') || v.name.includes('Serena')));
+            
+            if (ukFemaleVoice) {
+                utterance.voice = ukFemaleVoice;
+            } else {
+                // Fallback to any en-GB voice
+                const ukVoice = voices.find(v => v.lang.includes('en-GB'));
+                if (ukVoice) utterance.voice = ukVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Preload voices
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    </script>
+</body>
+</html>
